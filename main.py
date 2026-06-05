@@ -1,3 +1,4 @@
+import os
 import flet as ft 
 
 def main_page(page: ft.Page):
@@ -5,14 +6,22 @@ def main_page(page: ft.Page):
     page.title = 'Мое первое приложение'
 
     text_hello = ft.Text(value='Hello world')
-
     greeting_history = []
     history_text = ft.Text(value='История приветствий:')
 
+    if os.path.exists("history.txt"):
+        with open("history.txt", "r", encoding="utf-8") as file:
+      
+            for line in file:
+                name_from_file = line.strip()
+                if name_from_file:
+                    greeting_history.append(name_from_file)
+        
+        
+        if greeting_history:
+            history_text.value = "История приветствий:\n" + "\n".join(greeting_history)
 
     def on_button_click(_):
-        # print(name_input.value)
-
         if name_input.value:
             name = name_input.value.strip()
             text_hello.value = f'Hello {name}'
@@ -20,18 +29,31 @@ def main_page(page: ft.Page):
             text_hello.color = None
 
             greeting_history.append(name)
-            print(greeting_history)
-            history_text.value = "История приветсвий:\n" + "\n".join(greeting_history)
+            
+            if len(greeting_history) > 5:
+                greeting_history.pop(0) 
+
+            with open("history.txt", "w", encoding="utf-8") as file:
+                for item in greeting_history:
+                    file.write(f"{item}\n")
+
+            history_text.value = "История приветствий:\n" + "\n".join(greeting_history)
+            page.update() 
         else: 
             text_hello.value = 'Введите имя!'
             text_hello.color = ft.Colors.RED
+            page.update()
 
     name_input = ft.TextField(on_submit=on_button_click)
     button_elevated = ft.ElevatedButton('send', icon=ft.Icons.SEND, on_click=on_button_click)
 
     def clear_history(_):
         greeting_history.clear()
-        history_text.value = "История приветсвий:"
+        history_text.value = "История приветствий:"
+        if os.path.exists("history.txt"):
+            os.remove("history.txt")
+            
+        page.update()
 
     clear_button = ft.IconButton(icon=ft.Icons.DELETE, on_click=clear_history)
 
