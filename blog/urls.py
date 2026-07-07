@@ -1,7 +1,7 @@
 """
 URL configuration for blog project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+The urlpatterns list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
 Examples:
 Function views
@@ -20,13 +20,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from posts.views import about, home, post_list
+from posts.views import about, home, post_create, post_list
 
 urlpatterns = [
     path("admin", admin.site.urls),
     path("", home),
-    path("about/", about),
-    path("posts/", post_list),
+    path("about/", about, name="about"),
+    path("posts/", post_list, name="post_list"),
+    path("posts/create", post_create, name="post_create"),
 ]
 
 if settings.DEBUG:
