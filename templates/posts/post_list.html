@@ -1,9 +1,24 @@
-% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block content %}
 
 <div class="container py-5">
 
-  <!-- Шапка: заголовок + поиск -->
+  <div class="d-flex justify-content-end align-items-center gap-3 mb-4 p-3 bg-light rounded shadow-sm">
+    {% if user.is_authenticated %}
+      <span class="text-muted">Вы вошли как: <strong class="text-dark">{{ user.username }}</strong></span>
+      <form action="{% url 'logout' %}" method="post" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-sm px-3">
+          <i class="bi bi-box-arrow-right me-1"></i> Выйти
+        </button>
+      </form>
+    {% else %}
+      <span class="text-muted">Вы не авторизованы</span>
+      <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm px-3">Войти</a>
+      <a href="{% url 'register' %}" class="btn btn-primary btn-sm px-3">Регистрация</a>
+    {% endif %}
+  </div>
+
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
     
     <div>
@@ -18,7 +33,6 @@
       {% endif %}
     </div>
 
-    <!-- Форма поиска -->
     <form method="get" class="w-100" style="max-width: 420px;">
       <div class="input-group shadow-sm">
         <input type="text" 
@@ -41,13 +55,11 @@
     </form>
   </div>
 
-  <!-- Карточки -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for post in posts %}
     <div class="col">
       <div class="card h-100 border-0 shadow-sm overflow-hidden">
         
-        <!-- Изображение -->
         {% if post.image %}
         <img src="{{ post.image.url }}" 
              class="card-img-top" 

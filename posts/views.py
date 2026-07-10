@@ -3,7 +3,7 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 
-from posts.form import PostForm
+from posts.forms import PostForm
 from posts.models import Post
 
 
