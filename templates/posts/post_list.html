@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-5">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Публикации</h2>
+            <p class="text-muted mb-0">Всего постов: <strong>{{ count }}</strong></p>
+        </div>
+
+        <form method="get" class="w-100" style="max-width: 420px;">
+            <div class="input-group shadow-sm">
+                <input type="text" name="search" class="form-control form-control-lg" placeholder="Поиск по блогу..." value="{{ request.GET.search|default:'' }}" autocomplete="off">
+                <button class="btn btn-success px-4" type="submit">Найти</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for post in posts %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden" style="border-radius: 12px;">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="height: 240px; object-fit: cover;">
+                {% else %}
+                    <div class="d-flex flex-column align-items-center justify-content-center border-bottom text-muted" style="height: 240px; background-color: #252525;">
+                        <i class="bi bi-image mb-2" style="font-size: 2.5rem;"></i>
+                        <span class="small">Изображение отсутствует</span>
+                    </div>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column p-4">
+                    <h3 class="card-title fw-bold text-white mb-3">{{ post.title }}</h3>
+                    
+                    <div class="d-flex align-items-center gap-2 mb-3 text-muted small">
+                        <i class="bi bi-person-circle fs-5"></i>
+                        <span>Автор: <strong class="text-white">{{ post.user.username }}</strong></span>
+                        <span class="mx-1">|</span>
+                        <i class="bi bi-calendar3"></i>
+                        <span>{{ post.created_at|date:"d.m.Y в H:i" }}</span>
+                        <span class="mx-1">|</span>
+                        <span class="badge bg-warning text-dark px-2 py-1 fw-bold">★ {{ post.rate|floatformat:1 }}</span>
+                    </div>
+
+                    <p class="card-text text-secondary mb-4">{{ post.content|truncatewords:30 }}</p>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center mb-3">
+                        <form action="{% url 'toggle_like' post.id %}" method="post" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if post.id in liked_post_ids %}btn-danger{% else %}btn-outline-danger{% endif %} d-flex align-items-center gap-1 px-3 py-2">
+                                <i class="bi bi-heart-fill"></i> <span>{{ post.likes.count }}</span>
+                            </button>
+                        </form>
+                        
+                        <span class="text-muted small"><i class="bi bi-chat-text-fill me-1"></i> {{ post.comments.count }}</span>
+                    </div>
+
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                        Читать
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-dark border-0 py-4">Постов пока нет.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
